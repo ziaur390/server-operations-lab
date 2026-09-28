@@ -1,0 +1,28 @@
+# Environment settings — never commit real credentials
+.env
+*.env
+!*.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Backups — data files must not go to GitHub
+backups/
+*.sql
+*.dump
+
+# Monitoring logs produced at runtime
+logs/
+*.log
+
+# Ansible runtime
+*.retry
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
