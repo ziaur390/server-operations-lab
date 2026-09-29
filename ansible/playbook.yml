@@ -1,0 +1,79 @@
+---
+# Configures the Ubuntu server and deploys the application stack.
+# Idempotent: running again must report zero changed tasks.
+- name: Configure server and deploy server-operations-lab
+  hosts: server
+  become: true
+
+  vars:
+    app_dir: /opt/server-operations-lab
+
+  tasks:
+    - name: Install Docker and required packages
+      apt:
+        name:
+          - docker.io
+          - docker-compose-v2
+          - ca-certificates
+        state: present
+        update_cache: true
+
+    - name: Enable and start Docker
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Allow the admin user to run docker
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: true
+
+    - name: Create the application directory
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Copy the Compose stack to the server
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        mode: preserve
+      loop:
+        - { src: "{{ playbook_dir }}/../compose.yaml", dest: "{{ app_dir }}/compose.yaml" }
+        - { src: "{{ playbook_dir }}/../.env", dest: "{{ app_dir }}/.env" }
+
+    - name: Copy the Nginx configuration
+      copy:
+        src: "{{ playbook_dir }}/../nginx/"
+        dest: "{{ app_dir }}/nginx/"
+        mode: preserve
+
+    - name: Copy the application source
+      copy:
+        src: "{{ playbook_dir }}/../app/"
+        dest: "{{ app_dir }}/app/"
+        mode: preserve
+
+    - name: Build and start the stack
+      # command + changed_when instead of the compose module: docker
+      # compose is idempotent itself, and this makes the "no changes on
+      # re-run" property explicit for the second-run proof.
+      ansible.builtin.command: docker compose up -d --build
+      args:
+        chdir: "{{ app_dir }}"
+      register: compose_up
+      changed_when:
+        - compose_up.stdout is search("(Started|Recreated|Built)")
+        - compose_up.stdout is not search("Running")
+
+    - name: Confirm the application responds through Nginx
+      uri:
+        url: http://localhost:80/health
+        status_code: 200
+      register: health
+      retries: 5
+      delay: 3
+      until: health.status == 200
