@@ -43,16 +43,32 @@ Client → Nginx (port 80) → FastAPI (uvicorn) → PostgreSQL
 | # | Module | Status |
 |---|---|---|
 | 0 | Repo scaffold | ✅ |
-| 1 | FastAPI app (local) | ⏳ |
-| 2 | PostgreSQL integration | ⏳ |
-| 3 | Docker Compose | ⏳ |
-| 4 | Nginx reverse proxy | ⏳ |
-| 5 | Ubuntu VM | ⏳ |
-| 6 | Ansible automation | ⏳ |
-| 7 | Health checks & monitoring | ⏳ |
-| 8 | Backup & restore test | ⏳ |
-| 9 | Troubleshooting exercises | ⏳ |
-| 10 | GitHub Actions CI | ⏳ |
+| 1 | FastAPI app (local) | ✅ [PR #1](https://github.com/ziaur390/server-operations-lab/pull/1) |
+| 2 | PostgreSQL integration | ✅ [PR #2](https://github.com/ziaur390/server-operations-lab/pull/2) |
+| 3 | Docker Compose | ✅ [PR #3](https://github.com/ziaur390/server-operations-lab/pull/3) |
+| 4 | Nginx reverse proxy | ✅ [PR #4](https://github.com/ziaur390/server-operations-lab/pull/4) |
+| 5 | Target server (Ubuntu/WSL2) | ✅ [PR #6](https://github.com/ziaur390/server-operations-lab/pull/6) |
+| 6 | Ansible automation | ✅ [PR #7](https://github.com/ziaur390/server-operations-lab/pull/7) |
+| 7 | Health checks & monitoring | ✅ [PR #8](https://github.com/ziaur390/server-operations-lab/pull/8) |
+| 8 | Backup & restore test | ✅ [PR #9](https://github.com/ziaur390/server-operations-lab/pull/9) |
+| 9 | Troubleshooting exercises | ✅ [PR #10](https://github.com/ziaur390/server-operations-lab/pull/10) |
+| 10 | GitHub Actions CI | ✅ [PR #11](https://github.com/ziaur390/server-operations-lab/pull/11) |
+
+Every module was built on its own branch and merged through a pull
+request — see the [closed PRs](https://github.com/ziaur390/server-operations-lab/pulls?q=is%3Apr+is%3Aclosed)
+for the full review trail, and
+[docs/troubleshooting.md](docs/troubleshooting.md) for twelve real
+failures hit during the build.
+
+## Interview summary
+
+> I automated the deployment of a small FastAPI service to an Ubuntu
+> server using Ansible and Docker Compose. I configured Nginx as a
+> reverse proxy, built a health-check system with exit-code signaling
+> and cron scheduling, and tested PostgreSQL recovery by restoring a
+> backup into a fresh database and verifying the data. CI runs the API
+> tests against a PostgreSQL service container and builds the image on
+> every pull request.
 
 ## Repository layout
 
