@@ -57,6 +57,27 @@
         dest: "{{ app_dir }}/app/"
         mode: preserve
 
+    - name: Deploy monitoring scripts
+      copy:
+        src: "{{ playbook_dir }}/../scripts/"
+        dest: "{{ app_dir }}/scripts/"
+        mode: "0755"
+
+    - name: Create log directory owned by the admin user
+      file:
+        path: "{{ app_dir }}/logs"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+
+    - name: Schedule the health check every 5 minutes
+      cron:
+        name: server-operations-lab health check
+        user: root
+        minute: "*/5"
+        job: "{{ app_dir }}/scripts/health_check.sh >> {{ app_dir }}/logs/cron.log 2>&1"
+
     - name: Build and start the stack
       # command + changed_when instead of the compose module: docker
       # compose is idempotent itself, and this makes the "no changes on
